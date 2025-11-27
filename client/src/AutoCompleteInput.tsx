@@ -5,7 +5,7 @@ import "awesomplete/awesomplete.css";
 import { useApp } from "./App";
 import { useLocation } from "./Location";
 
-const AutoCompleteInput: React.FC<{isHere: boolean}> = ({ isHere }) => {
+const AutoCompleteInput: React.FC<{ isHere: boolean }> = ({ isHere }) => {
   const URL = process.env.REACT_APP_URL || '';
 
   const [awesomplete, setAwesomplete] = useState<Awesomplete | null>(null);
@@ -16,7 +16,8 @@ const AutoCompleteInput: React.FC<{isHere: boolean}> = ({ isHere }) => {
   const { hereOffset, setHereOffset, thereOffset, setThereOffset } = useLocation();
 
   const onInput = async (query: string): Promise<void> => {
-    const response = await fetch(URL + `/api/search?query=${query}`)
+    console.log(URL, query);
+    const response = await fetch(URL + (URL.startsWith("http://localhost") ? `/api/search?query=${query}` : `?path=search&query=${query}`));
     const data = await response.json();
     setSuggestions(data);
     suggestionsRef.current = data;
@@ -27,7 +28,7 @@ const AutoCompleteInput: React.FC<{isHere: boolean}> = ({ isHere }) => {
     const location: LocationProp = suggestionsRef.current[city];
     isHere ? setHereLocation(location) : setThereLocation(location);
     // offset
-    const response = await fetch(URL + `/api/offset?lat=${location["lat"]}&lng=${location["lng"]}`);
+    const response = await fetch(URL + (URL.startsWith("http://localhost") ? `/api/offset?lat=${location["lat"]}&lng=${location["lng"]}` : `?path=offset&lat=${location["lat"]}&lng=${location["lng"]}`));
     const data = await response.json();
     isHere ? setHereOffset(data) : setThereOffset(data);
   };

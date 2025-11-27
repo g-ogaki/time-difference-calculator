@@ -1,6 +1,7 @@
 import os
-from flask import Flask, send_from_directory, jsonify, request
+from flask import Flask, jsonify, request
 import requests
+from flask_cors import CORS
 
 if not "ENV" in os.environ:
     from dotenv import load_dotenv
@@ -9,17 +10,12 @@ if not "ENV" in os.environ:
 ENV = os.getenv("ENV")
 assert(ENV in ["dev", "prd"])
 
-app = Flask(
-    __name__,
-    static_folder="client/build" if ENV == "prd" else "client"
-)
+app = Flask(__name__)
+CORS(app)
 
 if ENV == "prd":
     GEONAMES_USERNAME = os.getenv("GEONAMES_USERNAME")
     TIMEZONE_DB_API_KEY = os.getenv("TIMEZONE_DB_API_KEY")
-else:
-    from flask_cors import CORS
-    CORS(app)
 
 # TBD: Error handling for development
 @app.route("/api/search", methods=["GET"])
@@ -103,14 +99,6 @@ def get_timezone():
             })
         else:
             raise ValueError("TimeZoneDB API")
-
-@app.route("/", defaults={"path": ""})
-@app.route("/<path:path>")
-def serve(path):
-    if path:
-        return send_from_directory(app.static_folder, path)
-    else:
-        return send_from_directory(app.static_folder, "index.html")
 
 if __name__ == "__main__":
     if ENV == "dev":
