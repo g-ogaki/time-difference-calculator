@@ -6,7 +6,7 @@ import { useApp } from "./App";
 import { useLocation } from "./Location";
 
 const AutoCompleteInput: React.FC<{ isHere: boolean }> = ({ isHere }) => {
-  const URL = process.env.REACT_APP_URL || '';
+  const URL = process.env.REACT_APP_API_URL || '';
 
   const [awesomplete, setAwesomplete] = useState<Awesomplete | null>(null);
   const [suggestions, setSuggestions] = useState<CitiesProp>({});
