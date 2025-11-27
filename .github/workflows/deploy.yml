@@ -34,15 +34,11 @@ jobs:
         working-directory: ./client
         run: npm ci
 
-      - name: Remove local .env file
-        working-directory: ./client
-        run: rm -f .env
-
       - name: Build
         working-directory: ./client
         run: npm run build
         env:
-          REACT_APP_URL: ${{ vars.REACT_APP_API_URL }}
+          REACT_APP_API_URL: ${{ vars.REACT_APP_API_URL }}
           CI: false  # Prevents treating warnings as errors
 
       - name: Setup Pages

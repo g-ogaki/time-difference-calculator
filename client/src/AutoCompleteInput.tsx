@@ -16,17 +16,8 @@ const AutoCompleteInput: React.FC<{ isHere: boolean }> = ({ isHere }) => {
   const { hereOffset, setHereOffset, thereOffset, setThereOffset } = useLocation();
 
   const onInput = async (query: string): Promise<void> => {
-    const fullURL = URL + (URL.startsWith("http://localhost") ? `/api/search?query=${query}` : `?path=search&query=${query}`);
-    console.log('Full URL:', fullURL);
-    console.log('URL env var:', URL);
-
-    const response = await fetch(fullURL);
-    console.log('Response status:', response.status);
-    console.log('Response ok:', response.ok);
-
+    const response = await fetch(URL + (URL.startsWith("http://localhost") ? `/api/search?query=${query}` : `?path=search&query=${query}`));
     const data = await response.json();
-    console.log('Data received:', data);
-
     setSuggestions(data);
     suggestionsRef.current = data;
   };
