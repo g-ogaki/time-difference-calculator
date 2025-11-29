@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { LocationProp, CitiesProp } from "./utils"
 import Awesomplete from "awesomplete";
 import "awesomplete/awesomplete.css";
@@ -15,14 +15,14 @@ export default function AutoCompleteInput({ isHere }: { isHere: boolean }) {
   const { setHereLocation, setThereLocation } = useApp();
   const { setHereOffset, setThereOffset } = useLocation();
 
-  const onInput = async (query: string): Promise<void> => {
+  async function onInput(query: string) {
     const response = await fetch(URL + (URL.startsWith("http://localhost") ? `/api/search?query=${query}` : `?path=search&query=${query}`));
     const data = await response.json();
     setSuggestions(data);
     suggestionsRef.current = data;
-  };
+  }
 
-  const onComplete = async (city: string): Promise<void> => {
+  async function onComplete(city: string) {
     // location
     const location: LocationProp = suggestionsRef.current[city];
     isHere ? setHereLocation(location) : setThereLocation(location);
@@ -53,9 +53,7 @@ export default function AutoCompleteInput({ isHere }: { isHere: boolean }) {
 
       setAwesomplete(newAwesomplete);
 
-      return () => {
-        if (awesomplete) awesomplete.destroy();
-      };
+      return () => { awesomplete?.destroy(); };
     }
   }, []);
 

@@ -4,37 +4,36 @@ import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 import { useApp } from "./App";
 
+function createCustomIcon(color: string) {
+  return L.icon({
+    iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+}
+const redIcon = createCustomIcon("red");
+const blueIcon = createCustomIcon("blue");
+
 function MapController() {
   const map = useMap();
   const { hereLocation, thereLocation } = useApp();
-
-  function createCustomIcon(color: string) {
-    return L.icon({
-      iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
-      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
-    });
-  }
-
-  const redIcon = createCustomIcon("red");
-  const blueIcon = createCustomIcon("blue");
 
   useEffect(() => {
     if (hereLocation) {
       const marker = L.marker([hereLocation["lat"], hereLocation["lng"]], { icon: redIcon }).addTo(map);
       return () => { marker.remove(); };
     }
-  }, [hereLocation]);
+  }, [hereLocation, map]);
 
   useEffect(() => {
     if (thereLocation) {
       const marker = L.marker([thereLocation["lat"], thereLocation["lng"]], { icon: blueIcon }).addTo(map);
       return () => { marker.remove(); };
     }
-  }, [thereLocation]);
+  }, [thereLocation, map]);
 
   return null;
 }

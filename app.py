@@ -2,13 +2,11 @@ import os
 from flask import Flask, jsonify, request
 import requests
 from flask_cors import CORS
+from dotenv import load_dotenv
 
-if not "ENV" in os.environ:
-    from dotenv import load_dotenv
-    load_dotenv()
+load_dotenv()
 
-ENV = os.getenv("ENV")
-assert(ENV in ["dev", "prd"])
+ENV = os.getenv("ENV") or "dev"
 
 app = Flask(__name__)
 CORS(app)
@@ -101,10 +99,4 @@ def get_timezone():
             raise ValueError("TimeZoneDB API")
 
 if __name__ == "__main__":
-    if ENV == "dev":
-        import subprocess
-        import threading
-        threading.Thread(
-            target=lambda: subprocess.call(["npm", "start"], cwd="client")
-        ).start()
     app.run(debug=True, port=8000)
