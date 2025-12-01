@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { CitiesProp } from "./utils"
 import Awesomplete from "awesomplete";
 import "awesomplete/awesomplete.css";
@@ -21,7 +21,7 @@ export default function AutoCompleteInput({ isHere }: { isHere: boolean }) {
   const { setHereLocation, setThereLocation } = useApp();
   const { setHereOffset, setThereOffset } = useLocation();
 
-  function onInput(query: string) {
+  const onInput = useCallback((query: string) => {
     debounceTimer.current && clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
       fetch(getApiUrl(URL, "search", `query=${query}`))
@@ -31,9 +31,9 @@ export default function AutoCompleteInput({ isHere }: { isHere: boolean }) {
           awesompleteRef.current && (awesompleteRef.current.list = Object.keys(suggestionsRef.current));
         });
     }, 500);
-  }
+  }, [URL]);
 
-  function onComplete(city: string) {
+  const onComplete = useCallback((city: string) => {
     // location
     const location = suggestionsRef.current[city];
     (isHere ? setHereLocation : setThereLocation)(location);
@@ -41,7 +41,7 @@ export default function AutoCompleteInput({ isHere }: { isHere: boolean }) {
     fetch(getApiUrl(URL, "offset", `lat=${location["lat"]}&lng=${location["lng"]}`))
       .then(response => response.json())
       .then(data => (isHere ? setHereOffset : setThereOffset)(data));
-  };
+  }, [URL, isHere, setHereLocation, setThereLocation, setHereOffset, setThereOffset]);
 
   useEffect(() => {
     if (!inputRef.current) return;
@@ -64,7 +64,7 @@ export default function AutoCompleteInput({ isHere }: { isHere: boolean }) {
       inputEl.removeEventListener("awesomplete-selectcomplete", handleSelectComplete);
       awesompleteRef.current?.destroy();
     };
-  }, []);
+  }, [onInput, onComplete]);
 
   return <input type="text" ref={inputRef} className="awesomplete" />;
 };
